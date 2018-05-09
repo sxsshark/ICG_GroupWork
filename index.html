@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Assignment</title>
+    <style>
+        body {
+            font-family: Monospace;
+            background-color: #000;
+            color: #fff;
+            margin: 0px;
+            overflow: hidden;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+        }
+</style>
+</head>
+<body>
+    <script src="js/three.js"></script>
+    <script src="js/OrbitControls.js"></script>
+    <script src="js/dat.gui.min.js"></script>
+    <script src="js/PLYLoader.js"></script>
+    <div id="info">
+        <p>Welcome to the Museum</p><br>
+      </div> 
+    <script>
+        //create the scene
+        var scene = new THREE.Scene();
+
+        //create the plane
+        var geometry_plane = new THREE.PlaneGeometry(50,50,200,200);
+        var material_plane = new THREE.MeshLambertMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
+        var plane = new THREE.Mesh( geometry_plane, material_plane );
+        plane.material.color.setHex( 0xff9a00 );
+        scene.add( plane );
+
+        //create wall_left
+        var geometry_wall_left = new THREE.BoxGeometry(10,30,1);
+        var material_wall = new THREE.MeshLambertMaterial({color: 0xffff00, side: THREE.DoubleSide});
+        var wall_left = new THREE.Mesh(geometry_wall_left,material_wall)
+        wall_left.receiveShadow=true;
+        wall_left.castShadow=false;
+        wall_left.rotation.y = THREE.Math.degToRad(90);
+        wall_left.translateX(5);
+        wall_left.translateZ(20);
+        scene.add(wall_left);
+
+        //create wall_right
+        var geometry_wall_right = new THREE.BoxGeometry(10,30,1);
+        var material_wall = new THREE.MeshLambertMaterial({color: 0xffff00, side: THREE.DoubleSide});
+        var wall_right = new THREE.Mesh(geometry_wall_right,material_wall)
+        wall_right.receiveShadow=true;
+        wall_right.castShadow=false;
+        wall_right.rotation.y = THREE.Math.degToRad(90);
+        wall_right.translateX(5);
+        wall_right.translateZ(-20);
+        scene.add(wall_right);
+
+        //create wall_back
+        var geometry_wall_back = new THREE.BoxGeometry(41,10,1);
+        var material_wall = new THREE.MeshLambertMaterial({color: 0xffff00, side: THREE.DoubleSide});
+        var wall_back = new THREE.Mesh(geometry_wall_back,material_wall)
+        wall_back.receiveShadow=true;
+        wall_back.castShadow=false;
+        wall_back.rotation.x = THREE.Math.degToRad(90);
+        wall_back.translateY(-5);
+        wall_back.translateZ(-15);
+        scene.add(wall_back);
+
+        //create wall_front_1
+        var geometry_wall_front_1 = new THREE.BoxGeometry(10,10,1);
+        var material_wall = new THREE.MeshLambertMaterial({color: 0xffff00, side: THREE.DoubleSide});
+        var wall_front_1 = new THREE.Mesh(geometry_wall_front_1,material_wall)
+        wall_front_1.receiveShadow=true;
+        wall_front_1.castShadow=false;
+        wall_front_1.rotation.x = THREE.Math.degToRad(90);
+        wall_front_1.translateY(-5);
+        wall_front_1.translateZ(15);
+        wall_front_1.translateX(15);
+        scene.add(wall_front_1);
+
+        //create the perspective camera
+        var camera = new THREE.PerspectiveCamera(35,
+                    window.innerWidth/window.innerHeight,0.1,3000);
+        //set camera position
+        camera.position.set(0,0,-30);
+        control = new THREE.OrbitControls( camera );
+
+        //create renderer
+        var renderer = new THREE.WebGLRenderer();
+        //set size of the render
+        renderer.setSize(window.innerWidth,window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+
+        var cameraLight = new THREE.PointLight(0xffffff,0.5);
+        camera.add(cameraLight);
+        scene.add(camera);
+
+        var light = new THREE.AmbientLight(0xffffff,0.5);
+        scene.add(light);
+
+        //final update loop
+        var MyUpdateLoop = function ( )
+        {
+        control.update();
+
+        //call the render with the scene and the camera
+        renderer.render(scene,camera);
+        //finally perform a recoursive call to update again
+        //this must be called because the mouse change the camera position
+        requestAnimationFrame(MyUpdateLoop);
+        };
+
+        requestAnimationFrame(MyUpdateLoop);
+
+        //this function is called when the window is resized
+        var MyResize = function ( )
+        {
+        //get the new sizes
+        var width = window.innerWidth;
+        var height = window.innerHeight;
+        //then update the renderer
+        renderer.setSize(width,height);
+        //and update the aspect ratio of the camera
+        camera.aspect = width/height;
+        //update the projection matrix given the new values
+        camera.updateProjectionMatrix();
+
+        //and finally render the scene again
+        renderer.render(scene,camera);
+        };
+    </script>
+</body>
+</html>
